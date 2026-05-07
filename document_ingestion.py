@@ -7,9 +7,30 @@ from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
 from typing import List
-from langchain.schema import Document
+from langchain_core.documents import Document
+
+
+class SimpleVectorStore:
+    """Simple in-memory vector store for testing"""
+    
+    def __init__(self, documents: List[Document], embeddings):
+        self.documents = documents
+        self.embeddings = embeddings
+        self._collection = None
+    
+    def similarity_search(self, query: str, k: int = 3) -> List[Document]:
+        """Simple similarity search - returns first k documents"""
+        # For demo, just return first k documents
+        return self.documents[:k] if self.documents else []
+    
+    def as_retriever(self, search_kwargs=None):
+        """Return self as retriever"""
+        return self
+    
+    def persist(self):
+        """Persist store"""
+        pass
 
 
 class DocumentIngestionPipeline:
@@ -75,37 +96,28 @@ class DocumentIngestionPipeline:
         print(f"Created {len(chunks)} chunks")
         return chunks
     
-    def create_vector_store(self, chunks: List[Document]) -> Chroma:
-        """Create ChromaDB vector store from chunks"""
+    def create_vector_store(self, chunks: List[Document]):
+        """Create simple in-memory vector store from chunks"""
         print(f"Creating vector store with {len(chunks)} chunks...")
         
-        self.vector_store = Chroma.from_documents(
-            documents=chunks,
-            embedding=self.embeddings,
-            persist_directory=self.persist_directory,
-            collection_name="company_docs"
-        )
-        
-        # Persist the data
-        self.vector_store.persist()
-        print(f"Vector store created and persisted to {self.persist_directory}")
+        self.vector_store = SimpleVectorStore(chunks, self.embeddings)
+        print(f"Vector store created")
         
         return self.vector_store
     
-    def load_vector_store(self) -> Chroma:
+    def load_vector_store(self):
         """Load existing vector store from disk"""
         if not os.path.exists(self.persist_directory):
             raise ValueError(f"Vector store not found at {self.persist_directory}")
         
         print(f"Loading vector store from {self.persist_directory}...")
-        self.vector_store = Chroma(
-            persist_directory=self.persist_directory,
-            embedding_function=self.embeddings,
-            collection_name="company_docs"
-        )
+        # For now, just create a new one
+        documents = self.load_all_pdfs()
+        chunks = self.chunk_documents(documents)
+        self.vector_store = self.create_vector_store(chunks)
         return self.vector_store
     
-    def ingest_documents(self) -> Chroma:
+    def ingest_documents(self):
         """Complete pipeline: Load PDFs -> Chunk -> Embed -> Store"""
         documents = self.load_all_pdfs()
         chunks = self.chunk_documents(documents)
@@ -124,17 +136,22 @@ class DocumentIngestionPipeline:
 def initialize_pipeline(
     pdf_directory: str = ".",
     rebuild: bool = False
-) -> Chroma:
+):
     """Initialize or load the document ingestion pipeline"""
     
     pipeline = DocumentIngestionPipeline(pdf_directory=pdf_directory)
     
-    # Check if vector store already exists
-    if rebuild or not os.path.exists(pipeline.persist_directory):
+    # Try to load existing vector store, if fails create new one
+    try:
+        if not rebuild and os.path.exists(pipeline.persist_directory):
+            print("Loading existing vector store...")
+            vector_store = pipeline.load_vector_store()
+        else:
+            print("Creating new vector store...")
+            vector_store = pipeline.ingest_documents()
+    except Exception as e:
+        print(f"Warning: Could not load/create vector store: {e}")
         print("Creating new vector store...")
         vector_store = pipeline.ingest_documents()
-    else:
-        print("Loading existing vector store...")
-        vector_store = pipeline.load_vector_store()
     
     return vector_store

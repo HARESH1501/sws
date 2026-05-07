@@ -67,12 +67,14 @@ async def startup_event():
         logger.info("Vector store loaded successfully")
         
         logger.info("Initializing RAG system...")
-        llm_model = os.getenv("LLM_MODEL", "gemini-pro")
+        llm_model = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
         temperature = float(os.getenv("TEMPERATURE", "0.7"))
-        llm_provider = os.getenv("LLM_PROVIDER", "gemini")
+        llm_provider = os.getenv("LLM_PROVIDER", "groq")
         
         # Get appropriate API key based on provider
-        if llm_provider == "gemini":
+        if llm_provider == "groq":
+            api_key = os.getenv("GROQ_API_KEY")
+        elif llm_provider == "gemini":
             api_key = os.getenv("GEMINI_API_KEY")
         else:
             api_key = os.getenv("OPENAI_API_KEY")
