@@ -20,9 +20,28 @@ class SimpleVectorStore:
         self._collection = None
     
     def similarity_search(self, query: str, k: int = 3) -> List[Document]:
-        """Simple similarity search - returns first k documents"""
-        # For demo, just return first k documents
-        return self.documents[:k] if self.documents else []
+        """Improved similarity search - returns documents from different sources"""
+        # Group documents by source
+        sources = {}
+        for doc in self.documents:
+            source = doc.metadata.get("source", "Unknown")
+            if source not in sources:
+                sources[source] = []
+            sources[source].append(doc)
+        
+        # Return first document from each source (up to k)
+        results = []
+        for source, docs in sources.items():
+            if len(results) < k and docs:
+                results.append(docs[0])
+        
+        # If we need more, add remaining documents
+        if len(results) < k:
+            for doc in self.documents:
+                if doc not in results and len(results) < k:
+                    results.append(doc)
+        
+        return results[:k]
     
     def as_retriever(self, search_kwargs=None):
         """Return self as retriever"""
