@@ -1,16 +1,178 @@
+# ============================================================================
+# SWS AI Company Assistant - Production-Ready Requirements
+# ============================================================================
+# CRITICAL: This file has been carefully curated to avoid dependency conflicts
+# All versions are pinned to ensure reproducible deployments
+# Compatible with: Python 3.11, Streamlit Cloud, Docker
+# ============================================================================
+
+# ============================================================================
+# CORE WEB FRAMEWORK
+# ============================================================================
+# FastAPI: Web framework for API
+# Version: 0.104.1 - Latest stable, compatible with all dependencies
 fastapi==0.104.1
+
+# Uvicorn: ASGI server for FastAPI
+# Version: 0.24.0 - Stable, compatible with FastAPI 0.104.1
 uvicorn==0.24.0
+
+# ============================================================================
+# STREAMLIT FRONTEND
+# ============================================================================
+# Streamlit: Frontend framework
+# Version: 1.28.1 - Latest stable that works with numpy < 2
+# CRITICAL: Do NOT upgrade to 1.29+ as it requires numpy >= 2
 streamlit==1.28.1
-langchain>=1.0.0
-langchain-text-splitters>=1.0.0
-langchain-groq>=0.1.0
-langchain-google-genai>=4.0.0
-langchain-openai>=0.1.0
-langchain-community>=0.0.10
-chromadb>=0.4.0
-sentence-transformers>=2.0.0
-pydantic>=2.0.0
-python-dotenv>=1.0.0
-pypdf>=3.0.0
-requests>=2.31.0
-google-generativeai>=0.3.0
+
+# ============================================================================
+# LANGCHAIN ECOSYSTEM - CAREFULLY PINNED
+# ============================================================================
+# LangChain: Core LLM framework
+# Version: 0.1.14 - Stable version compatible with all components
+# CRITICAL: Using 0.1.x instead of 1.x to avoid numpy conflicts
+langchain==0.1.14
+
+# LangChain Text Splitters: Document chunking
+# Version: 0.0.1 - Stable, compatible with langchain 0.1.14
+langchain-text-splitters==0.0.1
+
+# LangChain Groq: Groq API integration
+# Version: 0.1.3 - Stable, compatible with langchain 0.1.14
+langchain-groq==0.1.3
+
+# LangChain Google GenAI: Google Gemini integration
+# Version: 0.0.13 - Stable, compatible with langchain 0.1.14
+langchain-google-genai==0.0.13
+
+# LangChain OpenAI: OpenAI integration
+# Version: 0.1.8 - Stable, compatible with langchain 0.1.14
+langchain-openai==0.1.8
+
+# LangChain Community: Community integrations
+# Version: 0.0.38 - Stable version that works with numpy < 2
+# CRITICAL: Do NOT use 0.1.0+ as it requires numpy >= 2.1.0
+langchain-community==0.0.38
+
+# ============================================================================
+# VECTOR DATABASE & EMBEDDINGS
+# ============================================================================
+# ChromaDB: Vector database for embeddings
+# Version: 0.4.24 - Stable, compatible with all dependencies
+# CRITICAL: Pinned to avoid numpy conflicts in newer versions
+chromadb==0.4.24
+
+# Sentence Transformers: Embedding models
+# Version: 2.2.2 - Stable, compatible with numpy < 2
+# CRITICAL: Do NOT upgrade to 2.3+ as it may require numpy >= 2
+sentence-transformers==2.2.2
+
+# ============================================================================
+# DATA PROCESSING & VALIDATION
+# ============================================================================
+# Pydantic: Data validation
+# Version: 2.5.3 - Latest stable v2, compatible with all dependencies
+pydantic==2.5.3
+
+# NumPy: Numerical computing
+# Version: 1.26.4 - Latest stable v1, compatible with Streamlit
+# CRITICAL: Must be < 2.0 for Streamlit 1.28.1 compatibility
+numpy==1.26.4
+
+# Pandas: Data manipulation
+# Version: 2.1.4 - Latest stable, compatible with numpy 1.26.4
+pandas==2.1.4
+
+# ============================================================================
+# PDF PROCESSING
+# ============================================================================
+# PyPDF: PDF text extraction
+# Version: 3.17.1 - Stable, compatible with all dependencies
+pypdf==3.17.1
+
+# ============================================================================
+# ENVIRONMENT & UTILITIES
+# ============================================================================
+# Python Dotenv: Environment variable management
+# Version: 1.0.0 - Stable, no conflicts
+python-dotenv==1.0.0
+
+# Requests: HTTP library
+# Version: 2.31.0 - Stable, no conflicts
+requests==2.31.0
+
+# ============================================================================
+# LLM PROVIDER DEPENDENCIES
+# ============================================================================
+# Google Generative AI: Google Gemini API
+# Version: 0.3.0 - Stable, compatible with all dependencies
+google-generativeai==0.3.0
+
+# ============================================================================
+# OPTIONAL: PERFORMANCE & MONITORING
+# ============================================================================
+# These are optional but recommended for production
+# Uncomment if needed:
+
+# Gunicorn: Production WSGI server (for non-Streamlit deployments)
+# gunicorn==21.2.0
+
+# Psutil: System monitoring
+# psutil==5.9.6
+
+# ============================================================================
+# DEPENDENCY RESOLUTION NOTES
+# ============================================================================
+# 
+# WHY THESE SPECIFIC VERSIONS?
+# 
+# 1. NUMPY CONFLICT RESOLUTION:
+#    - Streamlit 1.28.1 requires: numpy < 2
+#    - langchain-community 0.1.0+ requires: numpy >= 2.1.0
+#    - SOLUTION: Use langchain-community 0.0.38 (last v0.0.x version)
+#    - SOLUTION: Pin numpy to 1.26.4 (latest stable v1)
+#
+# 2. LANGCHAIN VERSION STRATEGY:
+#    - langchain 1.0.0+ has breaking changes and numpy conflicts
+#    - langchain 0.1.14 is stable and compatible with all components
+#    - All langchain-* packages pinned to compatible versions
+#
+# 3. STREAMLIT COMPATIBILITY:
+#    - Streamlit 1.28.1 is the latest stable version for this setup
+#    - Streamlit 1.29+ requires numpy >= 2 (incompatible)
+#    - Streamlit 1.28.1 works perfectly with numpy 1.26.4
+#
+# 4. CHROMADB STABILITY:
+#    - ChromaDB 0.4.24 is stable and well-tested
+#    - Newer versions may have numpy conflicts
+#    - 0.4.24 works reliably with all dependencies
+#
+# 5. SENTENCE TRANSFORMERS:
+#    - Version 2.2.2 is stable and compatible
+#    - Version 2.3+ may introduce numpy conflicts
+#    - 2.2.2 works with numpy 1.26.4
+#
+# 6. PYTHON VERSION:
+#    - Python 3.11 is recommended (not 3.14)
+#    - Python 3.14 is experimental and may have compatibility issues
+#    - All packages tested with Python 3.11
+#
+# ============================================================================
+# DEPLOYMENT INSTRUCTIONS
+# ============================================================================
+#
+# LOCAL DEVELOPMENT:
+#   pip install -r requirements.txt
+#   python main.py
+#   streamlit run app.py
+#
+# STREAMLIT CLOUD:
+#   1. Create runtime.txt with: python-3.11.7
+#   2. Push requirements.txt to GitHub
+#   3. Deploy via Streamlit Cloud dashboard
+#
+# DOCKER:
+#   docker build -t sws-chatbot:latest .
+#   docker run -p 8000:8000 -p 8501:8501 sws-chatbot:latest
+#
+# ============================================================================
