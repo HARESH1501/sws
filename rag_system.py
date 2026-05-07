@@ -8,6 +8,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_community.vectorstores import Chroma
 from typing import Dict, List, Tuple
 import os
+from knowledge_base import KNOWLEDGE_BASE, get_answer
 
 
 class RAGSystem:
@@ -61,7 +62,18 @@ Answer:"""
         """Answer a question and return the answer with source documents"""
         
         try:
-            # Search for relevant documents
+            # First, try to get answer from knowledge base
+            kb_result = get_answer(question)
+            if kb_result["answer"] != "I don't have that information in the knowledge base.":
+                # Found in knowledge base
+                source_docs = [{
+                    "source": kb_result.get("source", "Knowledge Base"),
+                    "content": kb_result["answer"][:200] + "..." if len(kb_result["answer"]) > 200 else kb_result["answer"],
+                    "page": "KB"
+                }]
+                return kb_result["answer"], source_docs
+            
+            # If not in knowledge base, search vector store
             docs = self.vector_store.similarity_search(question, k=3)
             
             # Prepare context from documents
