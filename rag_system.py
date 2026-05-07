@@ -1,11 +1,11 @@
 """
 RAG system for question answering using LangChain
 """
-from langchain.chat_models import ChatOpenAI, ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from typing import Dict, List, Tuple
 import os
 

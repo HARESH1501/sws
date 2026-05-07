@@ -11,7 +11,6 @@ import logging
 
 from document_ingestion import initialize_pipeline
 from rag_system import create_rag_system
-from langchain.chat_models import ChatGoogleGenerativeAI
 
 # Load environment variables
 load_dotenv()

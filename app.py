@@ -63,6 +63,9 @@ if "messages" not in st.session_state:
 if "api_ready" not in st.session_state:
     st.session_state.api_ready = False
 
+if "api_url" not in st.session_state:
+    st.session_state.api_url = API_URL
+
 
 def check_api_health():
     """Check if API is running"""
@@ -73,7 +76,7 @@ def check_api_health():
         return False
 
 
-def query_chatbot(question: str) -> tuple[str, List[Dict]]:
+def query_chatbot(question: str) -> tuple:
     """Send question to API and get response"""
     try:
         response = requests.post(
